@@ -1,2 +1,4 @@
-odoo-data/
-postgres-data/
+# Ignorar contenedores y datos de GitLab
+gitlab/
+odoo17/
+odoo18/
