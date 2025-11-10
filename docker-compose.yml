@@ -1,32 +1,86 @@
-version: '3.8'
-
 services:
-  postgres:
+  postgres17:
     image: postgres:15
-    container_name: odoo_db
+    container_name: odoo17_db
     environment:
       POSTGRES_DB: postgres
-      POSTGRES_USER: odoo
-      POSTGRES_PASSWORD: odoo
+      POSTGRES_USER: odoo17
+      POSTGRES_PASSWORD: odoo17
     volumes:
-      - ./postgres-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+      - postgres17-data:/var/lib/postgresql/data
     restart: unless-stopped
+    networks:
+      - odoo17-network
 
-  odoo:
+  odoo17:
     image: odoo:17
-    container_name: odoo_app
+    container_name: odoo17_app
     depends_on:
-      - postgres
+      - postgres17
     ports:
       - "8069:8069"
+      - "8072:8072"  # Puerto para longpolling
     environment:
-      HOST: postgres
-      USER: odoo
-      PASSWORD: odoo
+      HOST: postgres17
+      USER: odoo17
+      PASSWORD: odoo17
     volumes:
-      - ./odoo-data:/var/lib/odoo
-      - ./addons:/mnt/extra-addons
+      - odoo17-data:/var/lib/odoo
+      - ./config/odoo17.conf:/etc/odoo/odoo.conf
+      - ./addons/oca-v17/crm:/mnt/extra-addons/crm
+      - ./addons/oca-v17/field-service:/mnt/extra-addons/field-service
+      - ./addons/oca-v17/knowledge:/mnt/extra-addons/knowledge
+      - ./addons/oca-v17/operating-unit:/mnt/extra-addons/operating-unit
+      - ./addons/oca-v17/project:/mnt/extra-addons/project
     restart: unless-stopped
+    networks:
+      - odoo17-network
 
+  postgres18:
+    image: postgres:16
+    container_name: odoo18_db
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: odoo18
+      POSTGRES_PASSWORD: odoo18
+    volumes:
+      - postgres18-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - odoo18-network
+
+  odoo18:
+    image: odoo:18
+    container_name: odoo18_app
+    depends_on:
+      - postgres18
+    ports:
+      - "8070:8069"
+      - "8073:8072"  # Puerto para longpolling
+    environment:
+      HOST: postgres18
+      USER: odoo18
+      PASSWORD: odoo18
+    volumes:
+      - odoo18-data:/var/lib/odoo
+      - ./config/odoo18.conf:/etc/odoo/odoo.conf
+      - ./addons/oca-v18/crm:/mnt/extra-addons/crm
+      - ./addons/oca-v18/field-service:/mnt/extra-addons/field-service
+      - ./addons/oca-v18/knowledge:/mnt/extra-addons/knowledge
+      - ./addons/oca-v18/operating-unit:/mnt/extra-addons/operating-unit
+      - ./addons/oca-v18/project:/mnt/extra-addons/project
+    restart: unless-stopped
+    networks:
+      - odoo18-network
+
+volumes:
+  postgres17-data:
+  postgres18-data:
+  odoo17-data:
+  odoo18-data:
+
+networks:
+  odoo17-network:
+    driver: bridge
+  odoo18-network:
+    driver: bridge

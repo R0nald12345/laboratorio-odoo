@@ -1,2 +1,7 @@
 odoo-data/
 postgres-data/
+# Volúmenes de datos nombrados
+
+# Ignorar las carpetas COMPLETAS que contienen los repositorios de la OCA.
+addons/oca-v17/
+addons/oca-v18/
